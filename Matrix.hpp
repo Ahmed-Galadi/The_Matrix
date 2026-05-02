@@ -20,7 +20,8 @@ class Matrix {
 		Matrix operator-(const Matrix &other) const;
 		Matrix operator*(const Matrix &other) const;
 		Matrix operator*(double scale) const;
-		double operator()(int rowNum, int colNum);
+		double operator()(int rowNum, int colNum) const;
+		double &operator()(int rowNum, int colNum);
 
 		void addRows(const std::vector<double> &row);
 		void addColumns(const std::vector<double> &column);

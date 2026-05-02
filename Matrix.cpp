@@ -63,14 +63,21 @@ Matrix Matrix::operator*(const Matrix &other) const {
 
 
 Matrix Matrix::operator*(double scale) const {
-	Matrix result(columns, rows);
+	Matrix result(rows, columns);
 	for (int i = 0; i < rows; i++)
 		for (int j = 0; j < columns; j++)
 			result.matrix[i][j] = matrix[i][j] * scale;
 	return (result);
 }
 
-double Matrix::operator()(int rowNum, int colNum){
+double Matrix::operator()(int rowNum, int colNum) const{
+	if (rowNum < 1 || colNum < 1 
+		|| rowNum > rows || colNum > columns)
+		throw (std::out_of_range("Matrix index out of range"));
+	return (matrix[rowNum-1][colNum-1]);
+}
+
+double &Matrix::operator()(int rowNum, int colNum) {
 	if (rowNum < 1 || colNum < 1 
 		|| rowNum > rows || colNum > columns)
 		throw (std::out_of_range("Matrix index out of range"));
