@@ -1,0 +1,23 @@
+
+## vector Transpose
+┌     ┐T   ┌   ┐   
+│x y z│    │x a│
+│a b c│  = │y b│
+└     ┘    │z c│
+           └   ┘    
+
+
+## Vectors Addition:
+┌  ┐   ┌  ┐   ┌     ┐   
+│x1│   │x2│   │x1+x2│
+│y1│ + │y2│ = │y1+y2│
+│z1│   │z2│   │z1+z2│
+└  ┘   └  ┘   └     ┘
+
+## Vectors multiplication:
+     ┌ ┐   ┌    ┐   
+     │x│   │2(x)│
+ 2 . │y│ = │2(y)│
+     │z│   │2(z)│
+     └ ┘   └    ┘
+
