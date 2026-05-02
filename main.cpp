@@ -1,5 +1,6 @@
 #include "Matrix.hpp"
 #include <fstream>
+#include <algorithm>
 
 int main() {
     std::ifstream file("data.csv");
@@ -27,7 +28,8 @@ int main() {
     // Matrixes
     Matrix X(m, 2);
     Matrix y(m,1);
-    double maxMilage = 240000.0; // i will get the max from milages later (TODO)
+
+    double maxMilage = *std::max_element(milages.begin(), milages.end());
     for (int i = 0; i < m; i++) {
         // row in the matrix is i+1
         X(i + 1, 1) = 1.0; // bias column
@@ -38,7 +40,7 @@ int main() {
 
 
     Matrix theta(2, 1);
-    double lr = 0.00000001;//very small learning rate (i will adjust it later)
+    double lr = 0.1;//very small learning rate (i will adjust it later)
     int iterations = 1000;
 
     for (int iter = 0; iter < iterations; ++iter) {
@@ -47,6 +49,12 @@ int main() {
         Matrix grad   = X.transpose() * error;
         grad = grad * (1.0 / m);// average
         theta = theta - (grad * lr);// update
+        if (iter % 100 == 0) {
+            double mse = 0;
+            for (int i = 0; i < m; ++i)
+                mse += error(i+1, 1) * error(i+1, 1);
+            std::cout << "MSE at iteration " << iter << ": " << mse/m << "\n";
+        }
     }
 
     std::cout << "this is θ₀ -> " << theta(1,1) << "\n";
