@@ -2,6 +2,7 @@
 #include <random>
 #include <iomanip>
 #include <string>
+#include <cmath>
 
 
 Matrix::Matrix() : rows(0), columns(0) {}

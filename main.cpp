@@ -40,8 +40,8 @@ int main() {
 
 
     Matrix theta(2, 1);
-    double lr = 0.1;//very small learning rate (i will adjust it later)
-    int iterations = 1000;
+    double lr = 0.01;
+    int iterations = 100000;
 
     for (int iter = 0; iter < iterations; ++iter) {
         Matrix pred   = X * theta;
@@ -51,7 +51,7 @@ int main() {
         theta = theta - (grad * lr);// update
         if (iter % 100 == 0) {
             double mse = 0;
-            for (int i = 0; i < m; ++i)
+            for (int i = 0; i < m; i++)
                 mse += error(i+1, 1) * error(i+1, 1);
             std::cout << "MSE at iteration " << iter << ": " << mse/m << "\n";
         }

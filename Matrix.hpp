@@ -40,5 +40,4 @@ class Matrix {
 		Matrix transpose() const;
 		void randomize(double min = -1.0, double max = 1.0);
 		void print() const;	
-
 };
