@@ -163,6 +163,14 @@ void Matrix::print() const {
     std::cout << "└" << spaces(innerWidth) << "┘\n";
 }
 
+Matrix Matrix::apply(double (*func)(double)) const {
+    Matrix result(rows, columns);
+    for (int i = 0; i < rows; i++)
+        for (int j = 0; j < columns; j++)
+            result.matrix[i][j] = func(matrix[i][j]);
+    return (result);
+}
+
 const char *Matrix::DimensionsDiff::what() const throw() {
 	return ("Error: Matrix Dimensions Difference -> operation cant be completed!");
 }
