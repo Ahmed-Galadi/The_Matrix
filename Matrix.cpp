@@ -85,6 +85,14 @@ double &Matrix::operator()(int rowNum, int colNum) {
 	return (matrix[rowNum-1][colNum-1]);
 }
 
+size_t Matrix::getRows() const {
+    return (rows);
+}
+
+size_t Matrix::getColumns() const {
+    return (columns);
+}
+
 Matrix Matrix::transpose() const {
     if (rows == 0 && columns == 0)
         return Matrix();
