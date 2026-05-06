@@ -42,4 +42,5 @@ class Matrix {
 		void print() const;	
 
 		Matrix apply(double (*func)(double)) const;
+		Matrix hadamard(const Matrix &other) const;
 };

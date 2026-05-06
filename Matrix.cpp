@@ -103,6 +103,16 @@ Matrix Matrix::transpose() const {
     return (result);
 }
 
+Matrix Matrix::hadamard(const Matrix &other) const {
+    if (rows != other.rows || columns != other.columns)
+        throw (DimensionsDiff());
+    Matrix results(rows, columns);
+    for (int i = 0; i < rows; i++)
+        for (int j = 0; j < columns; j++)
+            results.matrix[i][j] = matrix[i][j] * other.matrix[i][j];
+    return (results);
+}
+
 void Matrix::randomize(double min, double max) {
 	static std::mt19937 rng(std::random_device{}());
 	std::uniform_real_distribution<double> dist(min, max);

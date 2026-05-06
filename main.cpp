@@ -1,49 +1,70 @@
 #include <iostream>
-#include "HiddenLayer.hpp"
+#include <cmath>
+#include "HiddenLayer.hpp"   // includes Matrix.hpp
+
+// Activation functions (as above)
+double relu(double x) { return x > 0 ? x : 0; }
+double relu_derivative(double x) { return x > 0 ? 1.0 : 0.0; }
+double sigmoid(double x) { return 1.0 / (1.0 + std::exp(-x)); }
 
 int main() {
-    // ===== 1. Create layer (2 inputs -> 1 neuron) =====
-    HiddenLayer layer(2, 1);
+    // ===================== DATA =====================
+    Matrix X(4, 2);
+    X(1,1)=0; X(1,2)=0;
+    X(2,1)=0; X(2,2)=1;
+    X(3,1)=1; X(3,2)=0;
+    X(4,1)=1; X(4,2)=1;
 
-    // Manually set weights and biases for predictable results
-    Matrix w(2, 1);
-    w(1,1) = 1.0;   // weight for input 1
-    w(2,1) = 1.0;   // weight for input 2
-    layer.setWeights(w);
+    Matrix y(4, 1);
+    y(1,1)=0;
+    y(2,1)=1;
+    y(3,1)=1;
+    y(4,1)=0;
 
-    Matrix b(1, 1, 0.0);   // bias = 0
-    layer.setBiases(b);
+    // ===================== NETWORK =====================
+    HiddenLayer hidden(2, 4);   // 2 inputs -> 4 neurons
+    HiddenLayer output(4, 1);   // 4 -> 1 output
 
-    // ===== 2. Prepare input data =====
-    Matrix X(3, 2);         // 3 samples, 2 features each
-    X(1,1) = 1.0;  X(1,2) = 2.0;
-    X(2,1) = 1.0;  X(2,2) = 2.0;
-    X(3,1) = 1.0;  X(3,2) = 2.0;
+    double lr = 0.5;
+    int epochs = 5000;
 
-    // ===== 3. Forward pass =====
-    Matrix out = layer.forward(X);
-    std::cout << "Forward output (should be all 3.0):\n";
-    out.print();
-    std::cout << "\n";
+    // ===================== TRAINING =====================
+    for (int epoch = 0; epoch < epochs; ++epoch) {
+        // ----- Forward pass -----
+        Matrix Z1 = hidden.forward(X);
+        Matrix A1 = Z1.apply(relu);
 
-    // ===== 4. Prepare upstream gradient (same shape as output) =====
-    Matrix upstreamGrad(3, 1, 1.0);   // all 1.0
+        Matrix Z2 = output.forward(A1);
+        Matrix A2 = Z2.apply(sigmoid);
 
-    // ===== 5. Backward pass =====
-    double learningRate = 0.1;
-    Matrix inputGrad = layer.backward(upstreamGrad, learningRate);
+        // ----- Loss (optional print) -----
+        double loss = 0;
+        for (int i=0; i<4; ++i) {
+            double pred = A2(i+1,1);
+            double target = y(i+1,1);
+            loss += - (target * std::log(pred + 1e-12) + (1-target)*std::log(1-pred + 1e-12));
+        }
+        if (epoch % 500 == 0)
+            std::cout << "Epoch " << epoch << " Loss: " << loss/4 << "\n";
 
-    // ===== 6. Print results =====
-    std::cout << "Input gradient (should be all 1.0):\n";
-    inputGrad.print();
-    std::cout << "\n";
+        // ----- Backward pass (output layer) -----
+        Matrix dZ2 = A2 - y;   // gradient for sigmoid+cross-entropy
+        Matrix dA1 = output.backward(dZ2, lr);
 
-    std::cout << "New weights (should be [0.7, 0.4]):\n";
-    layer.getWeights().print();
-    std::cout << "\n";
+        // ----- Backward pass (hidden layer, with ReLU) -----
+        Matrix relu_mask = Z1.apply(relu_derivative);
+        Matrix dZ1 = dA1.hadamard(relu_mask);
+        hidden.backward(dZ1, lr);
+    }
 
-    std::cout << "New biases (should be [-0.3]):\n";
-    layer.getBiases().print();
+    // ===================== FINAL PREDICTIONS =====================
+    std::cout << "\nFinal predictions:\n";
+    Matrix A1_final = hidden.forward(X).apply(relu);
+    Matrix A2_final = output.forward(A1_final).apply(sigmoid);
+    for (int i=0; i<4; ++i) {
+        std::cout << "Input (" << X(i+1,1) << "," << X(i+1,2) << ") -> "
+                  << A2_final(i+1,1) << " (target " << y(i+1,1) << ")\n";
+    }
 
     return 0;
 }
