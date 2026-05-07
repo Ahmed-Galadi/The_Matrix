@@ -1,0 +1,45 @@
++ Using a model to make predictions:
+	[ y = mx + b ]
+
+- y	-> output (exmpl: prediction for wether tomorow)
+- x	-> input (exmpl: actual wether today)
+- m, b	-> model params
+
+* Explanation: [y] is our prediction, [x] is the input, the accuracy of [y] is determened by those [m] & [b] parameters. the quality of our predictions are going to be determened by how well those parameters aligned with reality.
+
+----- How do we pic those two parameters soo they fit to reality? ----------
+
++ Training phase:
+- in training we wanna minimize the defirence between our models prediction and real world data. we do this by calculating the loss and minimise it.
+
+		  ||			       || 2
+		  || ⌈y1⌉   (   ⌈x1⌉     ⌈1⌉ ) ||
+		  || |y2|   |   |x2|     |1| | ||
+	L(m, b) = || |. | - | m |. | + b |.| | ||
+		  || |. |   |   |. |     |.| | ||
+		  || ⌊yn⌋   (   ⌊xn⌋     ⌊1⌋ ) ||
+                  ||                           ||
+
+L(m,b)		   -> loss function (this is what quantify our loses)
+yn		   -> Actual values.
+xn		   -> inputs like the previous example.
+(   ⌈x1⌉     ⌈1⌉ )
+|   |x2|     |1| |
+| m |. | + b |.| | -> predicted values.
+|   |. |     |.| |
+(   ⌊xn⌋     ⌊1⌋ )
+
+GOAL: finding parameter values of [m] & [b] that give the smallest loss L(m,b)
+
+------------ we can solve this problem in a closed form using math -------------
+
+ 
+                 ⌈x1  1⌉                 ⌈y1⌉
+	         |.   .|       ⌈m⌉       |. |
+     Let,   X =  |.   .| , θ = ⌊b⌋ , y = |. |
+	         ⌊xn  1⌋                 ⌊yn⌋
+
+Loss Function now is : L(θ) = ||y - Xθ||^2 = (y - Xθ)^T (y-Xθ)
+                                           = y^T y - 2θ^T X^T y + θ^T X^T Xθ
+
+Compute gradient (works like derivative) of L(θ) : L'(θ) = -2X^T y + 2X^T Xθ
