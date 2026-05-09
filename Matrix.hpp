@@ -43,4 +43,5 @@ class Matrix {
 
 		Matrix apply(double (*func)(double)) const;
 		Matrix hadamard(const Matrix &other) const;
+		Matrix softmax() const;
 };

@@ -11,9 +11,9 @@ double sigmoid_derivative(double z) {
 }
 
 double relu(double x) {
-    return (x > 0 ? x : 0.0)
+    return (x > 0 ? x : 0.0);
 }
 
-double rulu_derivative(double x) {
+double relu_derivative(double x) {
     return (x > 0 ? 1.0 : 0.0);
 }

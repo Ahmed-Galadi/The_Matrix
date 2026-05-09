@@ -1,7 +1,14 @@
 #include "HiddenLayer.hpp"
+#include <cmath>
 
-HiddenLayer::HiddenLayer(int inputSize, int outputSize) : inputSize(inputSize), outputSize(outputSize), weights(inputSize, outputSize), biases(1, outputSize, 0.0) {
-    weights.randomize(-0.5, 0.5);
+HiddenLayer::HiddenLayer(int inputSize, int outputSize) : 
+    inputSize(inputSize),
+    outputSize(outputSize),
+    weights(inputSize, outputSize),
+    biases(1, outputSize, 0.0)
+{
+    double stddev = sqrt(2.0 / inputSize);
+    weights.randomize(-stddev, stddev);
 }
 
 Matrix HiddenLayer::getWeights() const {

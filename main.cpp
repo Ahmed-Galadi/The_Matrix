@@ -1,69 +1,209 @@
 #include <iostream>
+#include <fstream>
+#include <sstream>
+#include <string>
+#include <vector>
 #include <cmath>
-#include "HiddenLayer.hpp"   // includes Matrix.hpp
+#include <algorithm>
+#include "Matrix.hpp"
+#include "HiddenLayer.hpp"
+#include "helpers.h"
 
-// Activation functions (as above)
-double relu(double x) { return x > 0 ? x : 0; }
-double relu_derivative(double x) { return x > 0 ? 1.0 : 0.0; }
-double sigmoid(double x) { return 1.0 / (1.0 + std::exp(-x)); }
+// ---------- One-hot encoding ----------
+Matrix oneHotEncode(int label, int numClasses) {
+    Matrix oneHot(1, numClasses, 0.0);
+    oneHot(1, label + 1) = 1.0;   // 1‑based indexing
+    return oneHot;
+}
 
+// ---------- Main ----------
 int main() {
-    // ===================== DATA =====================
-    Matrix X(4, 2);
-    X(1,1)=0; X(1,2)=0;
-    X(2,1)=0; X(2,2)=1;
-    X(3,1)=1; X(3,2)=0;
-    X(4,1)=1; X(4,2)=1;
+    // ===================== LOAD TRAINING DATA =====================
+    std::ifstream trainFile("train.csv");
+    if (!trainFile) {
+        std::cerr << "Cannot open train.csv\n";
+        return 1;
+    }
 
-    Matrix y(4, 1);
-    y(1,1)=0;
-    y(2,1)=1;
-    y(3,1)=1;
-    y(4,1)=0;
+    std::string header;
+    std::getline(trainFile, header);   // skip header
+
+    std::vector<std::vector<double>> trainImages;
+    std::vector<int> trainLabels;
+    std::string line;
+
+    while (std::getline(trainFile, line)) {
+        std::stringstream ss(line);
+        std::string val;
+        std::getline(ss, val, ',');
+        int label = std::stoi(val);
+        trainLabels.push_back(label);
+
+        std::vector<double> pixels;
+        while (std::getline(ss, val, ',')) {
+            pixels.push_back(std::stod(val) / 255.0);
+        }
+        trainImages.push_back(pixels);
+    }
+    trainFile.close();
+
+    int numTrain = trainImages.size();
+    int numFeatures = 784;
+    int numClasses = 10;
+
+    // Build training matrices X and Y
+    Matrix X(numTrain, numFeatures);
+    Matrix Y(numTrain, numClasses);
+    for (int i = 0; i < numTrain; ++i) {
+        for (int j = 0; j < numFeatures; ++j) {
+            X(i + 1, j + 1) = trainImages[i][j];
+        }
+        Matrix oneHotRow = oneHotEncode(trainLabels[i], numClasses);
+        for (int j = 0; j < numClasses; ++j) {
+            Y(i + 1, j + 1) = oneHotRow(1, j + 1);
+        }
+    }
+
+    std::cout << "Training samples: " << numTrain << "\n";
+
+    // ===================== LOAD TEST DATA =====================
+    std::ifstream testFile("test.csv");
+    if (!testFile) {
+        std::cerr << "Cannot open test.csv\n";
+        return 1;
+    }
+
+    std::getline(testFile, header);
+    // Check if test set has labels
+    bool testHasLabels = (header.find("label") != std::string::npos);
+
+    std::vector<std::vector<double>> testImages;
+    std::vector<int> testLabels;   // only used if testHasLabels == true
+
+    while (std::getline(testFile, line)) {
+        std::stringstream ss(line);
+        std::string val;
+        if (testHasLabels) {
+            std::getline(ss, val, ',');
+            int label = std::stoi(val);
+            testLabels.push_back(label);
+        }
+        std::vector<double> pixels;
+        while (std::getline(ss, val, ',')) {
+            pixels.push_back(std::stod(val) / 255.0);
+        }
+        testImages.push_back(pixels);
+    }
+    testFile.close();
+
+    int numTest = testImages.size();
+    Matrix X_test(numTest, numFeatures);
+    for (int i = 0; i < numTest; ++i) {
+        for (int j = 0; j < numFeatures; ++j) {
+            X_test(i + 1, j + 1) = testImages[i][j];
+        }
+    }
+
+    std::cout << "Test samples: " << numTest;
+    if (testHasLabels) std::cout << " (with labels)";
+    std::cout << "\n\n";
 
     // ===================== NETWORK =====================
-    HiddenLayer hidden(2, 4);   // 2 inputs -> 4 neurons
-    HiddenLayer output(4, 1);   // 4 -> 1 output
+    HiddenLayer hidden(784, 128);
+    HiddenLayer output(128, 10);
 
-    double lr = 0.5;
-    int epochs = 5000;
+    double lr = 0.1;
+    int epochs = 50;
 
-    // ===================== TRAINING =====================
+    // ===================== TRAINING LOOP =====================
     for (int epoch = 0; epoch < epochs; ++epoch) {
-        // ----- Forward pass -----
+        // Forward pass (train)
         Matrix Z1 = hidden.forward(X);
         Matrix A1 = Z1.apply(relu);
-
         Matrix Z2 = output.forward(A1);
-        Matrix A2 = Z2.apply(sigmoid);
+        Matrix A2 = Z2.softmax();
 
-        // ----- Loss (optional print) -----
-        double loss = 0;
-        for (int i=0; i<4; ++i) {
-            double pred = A2(i+1,1);
-            double target = y(i+1,1);
-            loss += - (target * std::log(pred + 1e-12) + (1-target)*std::log(1-pred + 1e-12));
+        // Loss (cross‑entropy)
+        double loss = 0.0;
+        for (int i = 0; i < numTrain; ++i) {
+            for (int j = 0; j < numClasses; ++j) {
+                double pred = A2(i + 1, j + 1);
+                if (pred < 1e-12) pred = 1e-12;
+                loss -= Y(i + 1, j + 1) * std::log(pred);
+            }
         }
-        if (epoch % 500 == 0)
-            std::cout << "Epoch " << epoch << " Loss: " << loss/4 << "\n";
+        loss /= numTrain;
 
-        // ----- Backward pass (output layer) -----
-        Matrix dZ2 = A2 - y;   // gradient for sigmoid+cross-entropy
+        // Accuracy (train)
+        int correct = 0;
+        for (int i = 0; i < numTrain; ++i) {
+            double maxProb = -1.0;
+            int predictedClass = -1;
+            for (int j = 0; j < numClasses; ++j) {
+                if (A2(i + 1, j + 1) > maxProb) {
+                    maxProb = A2(i + 1, j + 1);
+                    predictedClass = j;
+                }
+            }
+            if (predictedClass == trainLabels[i]) correct++;
+        }
+        double acc = 100.0 * correct / numTrain;
+
+        std::cout << "Epoch " << epoch
+                  << " | Loss: " << loss
+                  << " | Train Acc: " << acc << "%\n";
+
+        // Backward pass (output)
+        Matrix dZ2 = A2 - Y;
+        dZ2 = dZ2 * (1.0 / numTrain);
         Matrix dA1 = output.backward(dZ2, lr);
 
-        // ----- Backward pass (hidden layer, with ReLU) -----
-        Matrix relu_mask = Z1.apply(relu_derivative);
-        Matrix dZ1 = dA1.hadamard(relu_mask);
+        // Backward pass (hidden + ReLU)
+        Matrix reluMask = Z1.apply(relu_derivative);
+        Matrix dZ1 = dA1.hadamard(reluMask);
         hidden.backward(dZ1, lr);
     }
 
-    // ===================== FINAL PREDICTIONS =====================
-    std::cout << "\nFinal predictions:\n";
-    Matrix A1_final = hidden.forward(X).apply(relu);
-    Matrix A2_final = output.forward(A1_final).apply(sigmoid);
-    for (int i=0; i<4; ++i) {
-        std::cout << "Input (" << X(i+1,1) << "," << X(i+1,2) << ") -> "
-                  << A2_final(i+1,1) << " (target " << y(i+1,1) << ")\n";
+    std::cout << "Training complete.\n\n";
+
+    // ===================== EVALUATE ON TEST =====================
+    Matrix Z1_test = hidden.forward(X_test);
+    Matrix A1_test = Z1_test.apply(relu);
+    Matrix Z2_test = output.forward(A1_test);
+    Matrix A2_test = Z2_test.softmax();
+
+    if (testHasLabels) {
+        // Compute accuracy on test set
+        int testCorrect = 0;
+        for (int i = 0; i < numTest; ++i) {
+            double maxProb = -1.0;
+            int predictedClass = -1;
+            for (int j = 0; j < numClasses; ++j) {
+                if (A2_test(i + 1, j + 1) > maxProb) {
+                    maxProb = A2_test(i + 1, j + 1);
+                    predictedClass = j;
+                }
+            }
+            if (predictedClass == testLabels[i]) testCorrect++;
+        }
+        double testAcc = 100.0 * testCorrect / numTest;
+        std::cout << "Test Accuracy: " << testAcc << "%\n";
+    } else {
+        std::ofstream subFile("predictions.csv");
+        subFile << "ImageId,Label\n";
+        for (int i = 0; i < numTest; ++i) {
+            double maxProb = -1.0;
+            int predictedClass = -1;
+            for (int j = 0; j < numClasses; ++j) {
+                if (A2_test(i + 1, j + 1) > maxProb) {
+                    maxProb = A2_test(i + 1, j + 1);
+                    predictedClass = j;
+                }
+            }
+            subFile << i + 1 << "," << predictedClass << "\n";
+        }
+        subFile.close();
+        std::cout << "Predictions saved to predictions.csv\n";
     }
 
     return 0;

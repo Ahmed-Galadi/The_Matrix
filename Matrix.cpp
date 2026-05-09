@@ -113,6 +113,27 @@ Matrix Matrix::hadamard(const Matrix &other) const {
     return (results);
 }
 
+Matrix Matrix::softmax() const {
+    Matrix result(rows, columns);   // same size, filled with 0.0
+
+    for (int i = 0; i < rows; ++i) {
+        double maxVal = matrix[i][0];
+        for (int j = 1; j < columns; ++j) {
+            if (matrix[i][j] > maxVal)
+                maxVal = matrix[i][j];
+        }
+        double sumExp = 0.0;
+        for (int j = 0; j < columns; ++j) {
+            double shifted = matrix[i][j] - maxVal;
+            result.matrix[i][j] = std::exp(shifted);   // temporarily store exp
+            sumExp += result.matrix[i][j];
+        }
+        for (int j = 0; j < columns; ++j)
+            result.matrix[i][j] /= sumExp;
+    }
+    return (result);
+}
+
 void Matrix::randomize(double min, double max) {
 	static std::mt19937 rng(std::random_device{}());
 	std::uniform_real_distribution<double> dist(min, max);
