@@ -3,6 +3,7 @@
 #include <iomanip>
 #include <string>
 #include <cmath>
+#include <fstream>
 
 
 Matrix::Matrix() : rows(0), columns(0) {}
@@ -212,4 +213,19 @@ Matrix Matrix::apply(double (*func)(double)) const {
 
 const char *Matrix::DimensionsDiff::what() const throw() {
 	return ("Error: Matrix Dimensions Difference -> operation cant be completed!");
+}
+
+
+
+void Matrix::save(const std::string &filename) const {
+    std::ofstream out(filename);
+    out << rows << " " << columns << "\n";
+    for (int i = 0; i < rows; ++i) {
+        for (int j = 0; j < columns; ++j) {
+            out << matrix[i][j];
+            if (j < columns - 1) out << " ";
+        }
+        out << "\n";
+    }
+    out.close();
 }

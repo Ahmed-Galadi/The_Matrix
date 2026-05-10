@@ -112,8 +112,8 @@ int main() {
     HiddenLayer hidden(784, 128);
     HiddenLayer output(128, 10);
 
-    double lr = 0.1;
-    int epochs = 50;
+    double lr = 0.25;
+    int epochs = 100;
 
     // ===================== TRAINING LOOP =====================
     for (int epoch = 0; epoch < epochs; ++epoch) {
@@ -206,5 +206,14 @@ int main() {
         std::cout << "Predictions saved to predictions.csv\n";
     }
 
+    // Save the hidden layer parameters
+    hidden.getWeights().save("hidden_weights.txt");
+    hidden.getBiases().save("hidden_biases.txt");
+
+    // Save the output layer parameters
+    output.getWeights().save("output_weights.txt");
+    output.getBiases().save("output_biases.txt");
+
+std::cout << "Model saved to hidden_weights.txt, hidden_biases.txt, output_weights.txt, output_biases.txt\n";
     return 0;
 }
