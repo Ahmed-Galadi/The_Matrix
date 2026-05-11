@@ -128,20 +128,20 @@ public class DrawPredict extends JPanel {
         gc.drawImage(scaled20, offsetX, offsetY, null);
         gc.dispose();
 
-        // Tiny 3x3 Gaussian blur to mimic MNIST anti‑aliasing
-        float[][] kernelData = {
-            {0.075f, 0.125f, 0.075f},
-            {0.125f, 0.200f, 0.125f},
-            {0.075f, 0.125f, 0.075f}
-        };
-        float[] kernelArray = new float[9];
-        int idx = 0;
-        for (int r = 0; r < 3; r++)
-        for (int c = 0; c < 3; c++)
-            kernelArray[idx++] = kernelData[r][c];
-        Kernel kernel = new Kernel(3, 3, kernelArray);
-        ConvolveOp op = new ConvolveOp(kernel, ConvolveOp.EDGE_NO_OP, null);
-        centered = op.filter(centered, null);
+        // // Tiny 3x3 Gaussian blur to mimic MNIST anti‑aliasing
+        // float[][] kernelData = {
+        //     {0.075f, 0.125f, 0.075f},
+        //     {0.125f, 0.200f, 0.125f},
+        //     {0.075f, 0.125f, 0.075f}
+        // };
+        // float[] kernelArray = new float[9];
+        // int idx = 0;
+        // for (int r = 0; r < 3; r++)
+        // for (int c = 0; c < 3; c++)
+        //     kernelArray[idx++] = kernelData[r][c];
+        // Kernel kernel = new Kernel(3, 3, kernelArray);
+        // ConvolveOp op = new ConvolveOp(kernel, ConvolveOp.EDGE_NO_OP, null);
+        // centered = op.filter(centered, null);
 
         // 5. Convert to double array (ink = 1.0, background = 0.0)
         double[] input = new double[INPUT];

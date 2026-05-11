@@ -86,6 +86,19 @@ double &Matrix::operator()(int rowNum, int colNum) {
 	return (matrix[rowNum-1][colNum-1]);
 }
 
+Matrix Matrix::load(const std::string &filename) {
+    std::ifstream in(filename);
+    if (!in) throw std::runtime_error("Cannot open " + filename);
+    int r, c;
+    in >> r >> c;
+    Matrix mat(r, c, 0.0);
+    for (int i = 0; i < r; ++i)
+        for (int j = 0; j < c; ++j)
+            in >> mat(i+1, j+1);
+    return mat;
+}
+
+
 size_t Matrix::getRows() const {
     return (rows);
 }

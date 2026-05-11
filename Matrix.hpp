@@ -23,6 +23,7 @@ class Matrix {
 		double operator()(int rowNum, int colNum) const;
 		double &operator()(int rowNum, int colNum);
 
+		static Matrix load(const std::string &filename);
 		void addRows(const std::vector<double> &row);
 		void addColumns(const std::vector<double> &column);
 
