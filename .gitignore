@@ -1,17 +1,12 @@
 # Data files (huge)
-train.csv
-test.csv
-data.csv
+*.csv
+
 
 # Model outputs (weights/biases)
 hidden_weights.txt
 hidden_biases.txt
 output_weights.txt
 output_biases.txt
-
-# Predictions / submissions
-predictions.csv
-output.csv
 
 # C++ binaries and object files
 a.out

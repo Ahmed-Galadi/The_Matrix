@@ -19,7 +19,7 @@ Matrix oneHotEncode(int label, int numClasses) {
 // ---------- Main ----------
 int main() {
     // ===================== LOAD TRAINING DATA =====================
-    std::ifstream trainFile("train.csv");
+    std::ifstream trainFile("/home/ahmed-galadi/Downloads/digit-recognizer/train.csv");
     if (!trainFile) {
         std::cerr << "Cannot open train.csv\n";
         return 1;
@@ -67,7 +67,7 @@ int main() {
     std::cout << "Training samples: " << numTrain << "\n";
 
     // ===================== LOAD TEST DATA =====================
-    std::ifstream testFile("test.csv");
+    std::ifstream testFile("/home/ahmed-galadi/Downloads/digit-recognizer/test.csv");
     if (!testFile) {
         std::cerr << "Cannot open test.csv\n";
         return 1;
@@ -113,10 +113,10 @@ int main() {
     HiddenLayer output(128, 10);
 
     double lr = 0.25;
-    int epochs = 100;
+    int epochs = 200;
 
     // ===================== TRAINING LOOP =====================
-    for (int epoch = 0; epoch < epochs; ++epoch) {
+    for (int epoch = 0; epoch < epochs; epoch++) {
         // Forward pass (train)
         Matrix Z1 = hidden.forward(X);
         Matrix A1 = Z1.apply(relu);
