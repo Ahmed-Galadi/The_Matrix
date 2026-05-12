@@ -6,6 +6,6 @@
 Datasets/*
 
 # C++ binaries and object files
-a.out
-*.o
-mnist
+Train+Finetune/a.out
+Train+Finetune/*.o
+Train+Finetune/mnist
