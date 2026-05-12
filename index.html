@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Digit Recognizer with Probabilities</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="app-container">
+        <h1>Digit Recognizer</h1>
+        
+        <div class="main-content">
+            <!-- Left Panel: Drawing Canvas -->
+            <div class="left-panel">
+                <div class="canvas-wrapper">
+                    <canvas id="drawCanvas" width="280" height="280"></canvas>
+                </div>
+                <div id="status" class="status-label">Loading Model...</div>
+            </div>
+
+            <!-- Right Panel: Predictions & Controls -->
+            <div class="right-panel">
+                <div id="prediction" class="prediction-label">Predicted: -</div>
+                <div id="probContainer" class="prob-container"></div>
+                <button id="clearBtn" class="btn primary" disabled>Clear Canvas</button>
+            </div>
+        </div>
+
+        <p class="note">Ensure <code>hidden_weights.txt</code>, <code>hidden_biases.txt</code>, <code>output_weights.txt</code>, and <code>output_biases.txt</code> are in the same folder. Run via a local server.</p>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
