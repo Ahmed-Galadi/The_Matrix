@@ -78,10 +78,10 @@ async function loadModel() {
     try {
         statusEl.textContent = 'Loading weights...';
         const [fW1, fB1, fW2, fB2] = await Promise.all([
-            fetch('hidden_weights.txt'),
-            fetch('hidden_biases.txt'),
-            fetch('output_weights.txt'),
-            fetch('output_biases.txt')
+            fetch('Datasets/hidden_weights.txt'),
+            fetch('Datasets/hidden_biases.txt'),
+            fetch('Datasets/output_weights.txt'),
+            fetch('Datasets/output_biases.txt')
         ]);
         if (!fW1.ok || !fB1.ok || !fW2.ok || !fB2.ok) throw new Error('Missing model files');
 

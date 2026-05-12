@@ -3,13 +3,9 @@
 
 
 # Model outputs (weights/biases)
-hidden_weights.txt
-hidden_biases.txt
-output_weights.txt
-output_biases.txt
+Datasets/*
 
 # C++ binaries and object files
 a.out
 *.o
 mnist
-test_nn

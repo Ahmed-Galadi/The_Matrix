@@ -226,7 +226,7 @@ public class DrawPredict extends JPanel {
         }
 
         // Append to mydata.csv
-        try (FileWriter fw = new FileWriter("mydata.csv", true);
+        try (FileWriter fw = new FileWriter("Datasets/mydata.csv", true);
              PrintWriter pw = new PrintWriter(fw)) {
             pw.print(label);
             for (int i = 0; i < INPUT; i++) {
@@ -274,10 +274,10 @@ public class DrawPredict extends JPanel {
     }
 
     public static void main(String[] args) throws Exception {
-        W1 = loadMatrix("hidden_weights.txt");
-        B1 = loadVector("hidden_biases.txt");
-        W2 = loadMatrix("output_weights.txt");
-        B2 = loadVector("output_biases.txt");
+        W1 = loadMatrix("Datasets/hidden_weights.txt");
+        B1 = loadVector("Datasets/hidden_biases.txt");
+        W2 = loadMatrix("Datasets/output_weights.txt");
+        B2 = loadVector("Datasets/output_biases.txt");
 
         System.out.println("W1 shape: " + W1.length + " x " + W1[0].length);
         System.out.println("W2 shape: " + W2.length + " x " + W2[0].length);

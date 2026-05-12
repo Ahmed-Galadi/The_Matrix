@@ -9,10 +9,6 @@
 #include "HiddenLayer.hpp"
 #include "helpers.h"
 
-// // Activation functions (same as before)
-// double relu(double x) { return x > 0 ? x : 0; }
-// double relu_derivative(double x) { return x > 0 ? 1.0 : 0.0; }
-
 // One‑hot encoding (same as before)
 Matrix oneHotEncode(int label, int numClasses) {
     Matrix oneHot(1, numClasses, 0.0);
@@ -58,21 +54,21 @@ void loadCSV(const std::string &filename,
 }
 
 int main() {
-    // ===================== 1. Load pre-trained parameters =====================
+    // ===================== Load pre-trained parameters =====================
     std::cout << "Loading pre-trained weights...\n";
     HiddenLayer hidden(784, 128);
     HiddenLayer output(128, 10);
 
-    hidden.setWeights(Matrix::load("hidden_weights.txt"));
-    hidden.setBiases(Matrix::load("hidden_biases.txt"));
-    output.setWeights(Matrix::load("output_weights.txt"));
-    output.setBiases(Matrix::load("output_biases.txt"));
+    hidden.setWeights(Matrix::load("../Datasets/hidden_weights.txt"));
+    hidden.setBiases(Matrix::load("../Datasets/hidden_biases.txt"));
+    output.setWeights(Matrix::load("../Datasets/output_weights.txt"));
+    output.setBiases(Matrix::load("../Datasets/output_biases.txt"));
     std::cout << "Pre-trained model loaded.\n\n";
 
-    // ===================== 2. Load personalised data =====================
+    // ===================== Load personalised data =====================
     std::vector<std::vector<double>> personalImages;
     std::vector<int> personalLabels;
-    loadCSV("mydata.csv", personalImages, personalLabels, false);  // already normalized
+    loadCSV("../Datasets/mydata.csv", personalImages, personalLabels, false);  // already normalized
     int numPersonal = personalImages.size();
     std::cout << "Personal samples loaded: " << numPersonal << "\n";
 
@@ -81,14 +77,14 @@ int main() {
         return 1;
     }
 
-    // ===================== 3. (Optional) Load a small MNIST subset =====================
+    // ===================== Load a small MNIST subset =====================
     std::vector<std::vector<double>> mnistImages;
     std::vector<int> mnistLabels;
-    loadCSV("mnist_subset.csv", mnistImages, mnistLabels, true);  // needs normalization
+    loadCSV("../Datasets/mnist_subset.csv", mnistImages, mnistLabels, true);  // needs normalization
     int numMnist = mnistImages.size();
     std::cout << "MNIST subset loaded: " << numMnist << " (optional)\n\n";
 
-    // ===================== 4. Combine datasets =====================
+    // ===================== Combine ../Datasets =====================
     int totalSamples = numPersonal + numMnist;
     int numFeatures = 784;
     int numClasses = 10;
@@ -117,7 +113,7 @@ int main() {
         ++row;
     }
 
-    // ===================== 5. Fine‑tuning loop =====================
+    // ===================== Fine‑tuning loop =====================
     double lr = 0.001;        // small learning rate
     int epochs = 15;
 
@@ -173,12 +169,12 @@ int main() {
         hidden.backward(dZ1, lr);
     }
 
-    // ===================== 6. Save updated parameters =====================
-    hidden.getWeights().save("hidden_weights.txt");
-    hidden.getBiases().save("hidden_biases.txt");
-    output.getWeights().save("output_weights.txt");
-    output.getBiases().save("output_biases.txt");
+    // ===================== Save updated parameters =====================
+    hidden.getWeights().save("../Datasets/hidden_weights.txt");
+    hidden.getBiases().save("../Datasets/hidden_biases.txt");
+    output.getWeights().save("../Datasets/output_weights.txt");
+    output.getBiases().save("../Datasets/output_biases.txt");
 
-    std::cout << "\nFine-tuned weights saved. Replace them in your Java project.\n";
+    std::cout << "\nFine-tuned weights saved.\n";
     return 0;
 }

@@ -19,7 +19,7 @@ Matrix oneHotEncode(int label, int numClasses) {
 // ---------- Main ----------
 int main() {
     // ===================== LOAD TRAINING DATA =====================
-    std::ifstream trainFile("/home/ahmed-galadi/Downloads/digit-recognizer/train.csv");
+    std::ifstream trainFile("../Datasets/train.csv");
     if (!trainFile) {
         std::cerr << "Cannot open train.csv\n";
         return 1;
@@ -67,7 +67,7 @@ int main() {
     std::cout << "Training samples: " << numTrain << "\n";
 
     // ===================== LOAD TEST DATA =====================
-    std::ifstream testFile("/home/ahmed-galadi/Downloads/digit-recognizer/test.csv");
+    std::ifstream testFile("../Datasets/test.csv");
     if (!testFile) {
         std::cerr << "Cannot open test.csv\n";
         return 1;
@@ -189,7 +189,7 @@ int main() {
         double testAcc = 100.0 * testCorrect / numTest;
         std::cout << "Test Accuracy: " << testAcc << "%\n";
     } else {
-        std::ofstream subFile("predictions.csv");
+        std::ofstream subFile("../Datasets/predictions.csv");
         subFile << "ImageId,Label\n";
         for (int i = 0; i < numTest; ++i) {
             double maxProb = -1.0;
@@ -207,13 +207,13 @@ int main() {
     }
 
     // Save the hidden layer parameters
-    hidden.getWeights().save("hidden_weights.txt");
-    hidden.getBiases().save("hidden_biases.txt");
+    hidden.getWeights().save("../Datasets/hidden_weights.txt");
+    hidden.getBiases().save("../Datasets/hidden_biases.txt");
 
     // Save the output layer parameters
-    output.getWeights().save("output_weights.txt");
-    output.getBiases().save("output_biases.txt");
+    output.getWeights().save("../Datasets/output_weights.txt");
+    output.getBiases().save("../Datasets/output_biases.txt");
 
-std::cout << "Model saved to hidden_weights.txt, hidden_biases.txt, output_weights.txt, output_biases.txt\n";
+std::cout << "Model saved to ../Datasets/hidden_weights.txt, ../Datasets/hidden_biases.txt, ../Datasets/output_weights.txt, ../Datasets/output_biases.txt\n";
     return 0;
 }
